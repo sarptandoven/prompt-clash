@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { supabaseServer } from '@/utils/supabase-server'
 import { scoreImages } from '@/utils/replicate'
@@ -23,7 +23,7 @@ async function getRandomArena() {
   return arenas[Math.floor(Math.random() * arenas.length)]
 }
 
-export async function GET(_req: NextRequest) {
+export async function GET() {
   try {
     const supabase = supabaseServer()
     const {
