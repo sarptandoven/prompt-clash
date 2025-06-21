@@ -1,6 +1,6 @@
-# PromptClash – 1-Hour MVP
+# Godot-Kontext Character Generator
 
-This repo contains a fully-functional Next.js 14 (App Router, TypeScript) implementation of **PromptClash**, the selfie-to-battle mini-game described in the spec.
+This repository contains a powerful local server designed to connect your Godot Engine projects directly with the Flux Kontext Pro image generation API. It provides a simple yet advanced interface for generating character sprites, textures, and assets on-the-fly. By running this server locally, you can send prompts and parameters from your Godot game via HTTP requests and receive high-quality images in real-time, enabling dynamic and procedural content creation for your game characters and environments.
 
 ---
 ## ⚡ Quick Start
