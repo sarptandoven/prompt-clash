@@ -1,36 +1,96 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# PromptClash – 1-Hour MVP
 
-## Getting Started
+This repo contains a fully-functional Next.js 14 (App Router, TypeScript) implementation of **PromptClash**, the selfie-to-battle mini-game described in the spec.
 
-First, run the development server:
+---
+## ⚡ Quick Start
 
 ```bash
+# 1. clone & install
+pnpm i # or npm i / yarn
+
+# 2. copy env variables
+cp env.example .env.local
+# fill in the values described below
+
+# 3. generate Prisma client
+npx prisma generate
+
+# 4. run locally
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open http://localhost:3000 – sign-in with Google, finish onboarding and battle!
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+---
+##  🔑 Environment variables (`.env.local`)
+| key | source | description |
+|-----|--------|-------------|
+| `NEXT_PUBLIC_SUPABASE_URL` | Supabase → Project Settings → API | public project URL |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Supabase → Project Settings → API | **anon** public key |
+| `SUPABASE_SERVICE_ROLE_KEY` | Supabase → Project Settings → API | service role key (used only in server routes) |
+| `DATABASE_URL` | Supabase → Project Settings → Database → Connection string (include `?sslmode=require`) | postgres connection for Prisma |
+| `REPLICATE_API_TOKEN` | https://replicate.com/account | personal token |
+| `NEXT_PUBLIC_APP_URL` | e.g. `https://promptclash.vercel.app` | used for OAuth redirect |
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+---
+## 🗄 Supabase setup (5 min)
+1. Create new project → enable **Google** provider.
+2. SQL editor → run `prisma/schema.prisma` or paste the SQL from it to create the two tables (`User`, `Battle`). *(Prisma migrations can also be used but this is fastest).*  
+3. **Storage › Buckets** → create a bucket named `selfies` and make it **Public**.
 
-## Learn More
+---
+## 🤖 Replicate setup  (1 min)
+1. Grab your API token from [replicate.com/account](https://replicate.com/account).  
+2. Add it to `.env.local`.
 
-To learn more about Next.js, take a look at the following resources:
+No model deployment is needed – the code calls:
+- `blackforestlabs/flux-kontext` for avatar generation.
+- `laion/clip-vit-large-patch14` for scoring.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+---
+## 🚀 Deploy on Vercel (3 min)
+1. Push this repo to GitHub.
+2. In Vercel, **New Project** → import the repo.
+3. Add the **same env vars** on the *Environment Variables* tab.
+4. Hit **Deploy** – done!
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+---
+## 🏗 Tech Stack
+- **Next.js 14** (App Router, React server components)
+- **shadcn/ui** + **Tailwind CSS** for styling
+- **Supabase** for auth (Google OAuth), Postgres, and Storage
+- **Prisma** ORM (connected to Supabase's Postgres)
+- **Replicate** hosted ML models (Flux Kontext & CLIP)
 
-## Deploy on Vercel
+---
+## ✨ Feature Overview
+| path | purpose |
+|------|---------|
+| `/` | Landing – single *"Sign in with Google"* button |
+| `/onboard` | 2-step flow: upload selfie, type *Ability Prompt*, generate avatar |
+| `/dashboard` | shows your avatar · *Battle Now* button |
+| `/leaderboard` | Top 10 gladiators sorted by Elo |
+| `/battle/[id]` | Arena banner + two avatars, scores & winner badge |
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Serverless routes live under `app/api/*`:
+* `save-avatar` – persists avatar & ability to DB
+* `battle` – full battle pipeline (pick opponent, CLIP scoring, Elo update)
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+---
+## 🧩 Folder Structure (important bits)
+```txt
+src/
+  app/
+    [routes]
+  components/
+    AvatarCard.tsx
+  utils/
+    elo.ts  replicate.ts  supabase-*.ts  cn.ts
+  lib/
+    prisma.ts
+prisma/
+  schema.prisma
+```
+
+Feel free to PR/issue for improvements – this is an MVP built in ±1 hour ⚡
