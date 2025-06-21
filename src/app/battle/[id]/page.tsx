@@ -2,7 +2,12 @@ import { prisma } from '@/lib/prisma'
 import AvatarCard from '@/components/AvatarCard'
 import { notFound } from 'next/navigation'
 
-export default async function BattlePage({ params }: { params: { id: string } }) {
+type BattlePageProps = {
+  params: { id: string }
+  searchParams: { [key: string]: string | string[] | undefined }
+}
+
+export default async function BattlePage({ params }: BattlePageProps) {
   const battle = await prisma.battle.findUnique({ where: { id: params.id } })
   if (!battle) return notFound()
   const winnerA = battle.winnerId === battle.aId
