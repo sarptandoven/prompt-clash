@@ -12,7 +12,6 @@ export default async function Home() {
   }
 
   const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
-  // @ts-ignore Supabase types allow string but immaterial here
   const { data } = await supabase.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: `${appUrl}/onboard` } })
 
   return (

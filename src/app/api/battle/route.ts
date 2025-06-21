@@ -1,8 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { supabaseServer } from '@/utils/supabase-server'
-import { generateAvatar, scoreImages } from '@/utils/replicate'
+import { scoreImages } from '@/utils/replicate'
 import { calculateNewElo } from '@/utils/elo'
+
+// Manually define the type for the User model to satisfy linting rules
+interface BattleUser {
+  id: string
+  elo: number
+  avatarUrl: string
+  ability: string
+}
 
 async function getRandomArena() {
   const arenas = [
@@ -15,7 +23,7 @@ async function getRandomArena() {
   return arenas[Math.floor(Math.random() * arenas.length)]
 }
 
-export async function GET(req: NextRequest) {
+export async function GET(_req: NextRequest) {
   try {
     const supabase = supabaseServer()
     const {
@@ -29,7 +37,7 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: 'User not onboarded' }, { status: 400 })
 
     // Pick random opponent
-    const opponent = await prisma.$queryRaw`SELECT * FROM "User" WHERE id != ${me.id} ORDER BY RANDOM() LIMIT 1` as any[]
+    const opponent = (await prisma.$queryRaw`SELECT * FROM "User" WHERE id != ${me.id} ORDER BY RANDOM() LIMIT 1`) as BattleUser[]
     if (!opponent.length)
       return NextResponse.json({ error: 'No opponents found' }, { status: 404 })
     const opp = opponent[0]

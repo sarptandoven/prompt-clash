@@ -4,9 +4,16 @@ import { supabaseBrowser } from '@/utils/supabase-browser'
 import AvatarCard from '@/components/AvatarCard'
 import { useRouter } from 'next/navigation'
 
+interface DashboardUser {
+  id: string
+  name: string | null
+  avatarUrl: string | null
+  // Add other fields from your User model that you need here
+}
+
 export default function Dashboard() {
   const supabase = supabaseBrowser
-  const [userData, setUserData] = useState<any>(null)
+  const [userData, setUserData] = useState<DashboardUser | null>(null)
   const router = useRouter()
 
   useEffect(() => {
@@ -23,7 +30,7 @@ export default function Dashboard() {
       setUserData(data)
     }
     fetchUser()
-  }, [])
+  }, [router, supabase])
 
   async function handleBattle() {
     const res = await fetch('/api/battle')

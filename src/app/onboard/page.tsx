@@ -17,7 +17,7 @@ export default function Onboard() {
     // Upload selfie to Supabase storage
     const fileExt = selfieFile.name.split('.').pop()
     const fileName = `${Date.now()}.${fileExt}`
-    const { data: uploadData, error: uploadError } = await supabase.storage.from('selfies').upload(fileName, selfieFile)
+    const { error: uploadError } = await supabase.storage.from('selfies').upload(fileName, selfieFile)
     if (uploadError) {
       console.error(uploadError)
       setLoading(false)
