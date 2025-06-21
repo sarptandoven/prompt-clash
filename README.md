@@ -1,6 +1,6 @@
 # Godot-Kontext Character Generator
 
-This repository contains a powerful local server designed to connect your Godot Engine projects directly with the Flux Kontext Pro image generation API. It provides a simple yet advanced interface for generating character sprites, textures, and assets on-the-fly. By running this server locally, you can send prompts and parameters from your Godot game via HTTP requests and receive high-quality images in real-time, enabling dynamic and procedural content creation for your game characters and environments.
+Powerful local server designed to connect your Godot Engine (lora the explorer - evolits) directly with the Flux Kontext Pro image generation API. It provides a simple yet advanced interface for generating character sprites, textures, and assets on-the-fly. By running this server locally, you can send prompts and parameters from your Godot game via HTTP requests and receive high-quality images in real-time, enabling dynamic and procedural content creation for your game characters and environments.
 
 ---
 ## ⚡ Quick Start
