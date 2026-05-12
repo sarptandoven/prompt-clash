@@ -1,17 +1,16 @@
 import { NextResponse } from 'next/server';
 import Replicate from 'replicate';
 
-const replicate = new Replicate({
-  auth: process.env.REPLICATE_API_TOKEN,
-});
-
 export async function POST(req: Request) {
-  if (!process.env.REPLICATE_API_TOKEN) {
+  const apiToken = process.env.REPLICATE_API_TOKEN;
+  if (!apiToken) {
     return NextResponse.json(
       { error: "Replicate API token not found" },
       { status: 500 }
     );
   }
+
+  const replicate = new Replicate({ auth: apiToken });
 
   const body = await req.json();
   const { 

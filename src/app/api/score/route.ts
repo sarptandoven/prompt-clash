@@ -1,14 +1,13 @@
 import { NextResponse } from 'next/server';
 import Replicate from 'replicate';
 
-const replicate = new Replicate({
-  auth: process.env.REPLICATE_API_TOKEN,
-});
-
 export async function POST(req: Request) {
-  if (!process.env.REPLICATE_API_TOKEN) {
+  const apiToken = process.env.REPLICATE_API_TOKEN;
+  if (!apiToken) {
     return NextResponse.json({ error: 'Replicate API token not found' }, { status: 500 });
   }
+
+  const replicate = new Replicate({ auth: apiToken });
 
   const { imageUrl, prompt } = await req.json();
 
@@ -17,24 +16,27 @@ export async function POST(req: Request) {
   }
 
   try {
-    const output = await replicate.run(
+    const output: unknown = await replicate.run(
       "methexis-inc/clip-interrogator-2:009633c152a5b285a8542d244a6757b65345755b41295781a7cd58ac01e40348",
       {
         input: {
           image: imageUrl,
-          prompt: prompt,
+          prompt,
         },
       }
     );
-    // The model returns a single string like "score: 0.87". We need to parse it.
+
+    // The model can return a string like "score: 0.87" or an array with a numeric score.
     if (typeof output === 'string' && output.includes('score:')) {
-        const score = parseFloat(output.split('score:')[1].trim());
-        return NextResponse.json({ score });
+      const score = parseFloat(output.split('score:')[1].trim());
+      return NextResponse.json({ score });
     }
 
-    const score = (output as number[])[0]
+    if (Array.isArray(output) && typeof output[0] === 'number') {
+      return NextResponse.json({ score: output[0] });
+    }
 
-    return NextResponse.json({ score });
+    return NextResponse.json({ error: 'Unexpected scoring response' }, { status: 502 });
     
   } catch (error) {
     console.error(error);

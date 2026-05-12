@@ -1,14 +1,13 @@
 import { NextResponse } from 'next/server';
 import OpenAI from 'openai';
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
-
 export async function GET() {
-  if (!process.env.OPENAI_API_KEY) {
+  const apiKey = process.env.OPENAI_API_KEY;
+  if (!apiKey) {
     return NextResponse.json({ error: 'OpenAI API key not found' }, { status: 500 });
   }
+
+  const openai = new OpenAI({ apiKey });
 
   try {
     const completion = await openai.chat.completions.create({
